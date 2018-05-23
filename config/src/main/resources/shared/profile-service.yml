@@ -1,0 +1,12 @@
+spring:
+  data:
+    mongodb:
+      host: profile-mongodb
+      username: user
+      password: ${MONGODB_PASSWORD}
+      database: professional-profile
+      port: 27017
+
+server:
+  context-path: /profile
+  port: 6000

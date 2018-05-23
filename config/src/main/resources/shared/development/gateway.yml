@@ -1,0 +1,62 @@
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 20000
+
+ribbon:
+  ReadTimeout: 20000
+  ConnectTimeout: 20000
+
+zuul:
+  ignoredServices: '*'
+  prefix: /api
+  host:
+    connect-timeout-millis: 20000
+    socket-timeout-millis: 20000
+
+  routes:
+    auth-service:
+        path: /uaa/**
+        url: http://localhost:2000
+        stripPrefix: false
+        sensitiveHeaders:
+
+    profile-service:
+        path: /profile/**
+        serviceId: profile-service
+        stripPrefix: false
+        sensitiveHeaders:
+
+    jobs-service:
+        path: /jobs/**
+        serviceId: jobs-service
+        stripPrefix: false
+        sensitiveHeaders:
+
+    skills-service:
+        path: /skills/**
+        serviceId: skills-service
+        stripPrefix: false
+        sensitiveHeaders:
+
+    projects-service:
+        path: /projects/**
+        serviceId: projects-service
+        stripPrefix: false
+        sensitiveHeaders:
+
+    messages-service:
+        path: /messages/**
+        serviceId: messages-service
+        stripPrefix: false
+        sensitiveHeaders:
+
+server:
+    port: 8080
+
+spring:
+  mvc:
+    dispatch-options-request: true

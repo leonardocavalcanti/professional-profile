@@ -1,0 +1,5 @@
+spring:
+  data:
+    mongodb:
+      database: professionalprofile
+      port: 0

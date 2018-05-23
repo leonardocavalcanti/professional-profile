@@ -1,0 +1,12 @@
+spring:
+  data:
+    mongodb:
+      host: jobs-mongodb
+      username: user
+      password: ${MONGODB_PASSWORD}
+      database: professional-profile
+      port: 27017
+
+server:
+  context-path: /jobs
+  port: 4000
