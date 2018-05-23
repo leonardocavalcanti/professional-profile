@@ -4,12 +4,12 @@ pipeline {
     stage('build') {
       agent {
         docker {
-          image 'maven:3-alpine'
+          image 'rowanto/docker-java8-mvn-nodejs-npm'
         }
 
       }
       steps {
-        sh 'mvn package'
+        sh 'mvn -B -DskipTests clean package'
       }
     }
   }
