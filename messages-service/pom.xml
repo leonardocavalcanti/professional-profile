@@ -103,7 +103,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<finalName>message-service</finalName>
+					<finalName>messages-service</finalName>
 				</configuration>
 			</plugin>
 			<plugin>
