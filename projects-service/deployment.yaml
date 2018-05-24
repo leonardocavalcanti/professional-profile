@@ -94,4 +94,9 @@ spec:
             secretKeyRef:
               name: secrets
               key: MONGODB_PASSWORD
+        - name: RABBITMQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: secrets
+              key: RABBITMQ_PASSWORD
       restartPolicy: Always
