@@ -1,0 +1,97 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: profile-mongodb-pv-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: profile-mongodb
+spec:
+  selector:
+    matchLabels:
+      app: profile-mongodb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: profile-mongodb
+    spec:
+      containers:
+      - image: professionalprofile/mongodb
+        name: profile-mongodb
+        env:
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: secrets
+              key: MONGODB_PASSWORD
+        ports:
+        - containerPort: 27017
+          name: profile-mongodb
+        volumeMounts:
+        - name: mongodb-persistent-storage
+          mountPath: /data/db
+      volumes:
+      - name: mongodb-persistent-storage
+        persistentVolumeClaim:
+          claimName: profile-mongodb-pv-claim
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: profile-mongodb
+spec:
+  ports:
+  - port: 27017
+  selector:
+    app: profile-mongodb
+  clusterIP: None
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: profile-service
+spec:
+  selector:
+    app: profile-service
+  ports:
+  - port: 6000
+  clusterIP: None
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: profile-service
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: profile-service
+    spec:
+      containers:
+      - image: professionalprofile/profile-service
+        name: profile-service
+        env:
+        - name: CONFIG_SERVICE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: secrets
+              key: CONFIG_SERVICE_PASSWORD
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: secrets
+              key: MONGODB_PASSWORD
+      restartPolicy: Always

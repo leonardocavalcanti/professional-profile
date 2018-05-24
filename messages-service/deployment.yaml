@@ -1,0 +1,97 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: messages-mongodb-pv-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: messages-mongodb
+spec:
+  selector:
+    matchLabels:
+      app: messages-mongodb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: messages-mongodb
+    spec:
+      containers:
+      - image: professionalprofile/mongodb
+        name: messages-mongodb
+        env:
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: secrets
+              key: MONGODB_PASSWORD
+        ports:
+        - containerPort: 27017
+          name: messages-mongodb
+        volumeMounts:
+        - name: mongodb-persistent-storage
+          mountPath: /data/db
+      volumes:
+      - name: mongodb-persistent-storage
+        persistentVolumeClaim:
+          claimName: messages-mongodb-pv-claim
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: messages-mongodb
+spec:
+  ports:
+  - port: 27017
+  selector:
+    app: messages-mongodb
+  clusterIP: None
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: messages-service
+spec:
+  selector:
+    app: messages-service
+  ports:
+  - port: 5000
+  clusterIP: None
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: messages-service
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: messages-service
+    spec:
+      containers:
+      - image: professionalprofile/messages-service
+        name: messages-service
+        env:
+        - name: CONFIG_SERVICE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: secrets
+              key: CONFIG_SERVICE_PASSWORD
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: secrets
+              key: MONGODB_PASSWORD
+      restartPolicy: Always

@@ -1,7 +1,6 @@
 FROM mongo:latest
 
 ADD init.sh /init.sh
-ADD ./dump /
 
 RUN \
  chmod +x /init.sh && \
