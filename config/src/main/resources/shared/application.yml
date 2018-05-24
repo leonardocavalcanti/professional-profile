@@ -25,3 +25,5 @@ security:
 spring:
   rabbitmq:
     host: rabbitmq
+    username: user
+    password: ${RABBITMQ_PASSWORD}
